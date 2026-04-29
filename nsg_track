@@ -1,0 +1,20 @@
+AzureActivity
+| where TimeGenerated >= ago(30d)
+| where ResourceProviderValue =~ "MICROSOFT.NETWORK"
+| where OperationNameValue has_any (
+    "microsoft.network/networksecuritygroups/write",
+    "microsoft.network/networksecuritygroups/delete",
+    "microsoft.network/networksecuritygroups/securityrules/write",
+    "microsoft.network/networksecuritygroups/securityrules/delete"
+)
+| where ActivityStatusValue =~ "Success"
+| project
+    TimeGenerated,
+    OperationNameValue,
+    ResourceGroup,
+    Resource,
+    Caller,
+    CallerIpAddress,
+    ActivityStatusValue,
+    Properties
+| order by TimeGenerated desc
